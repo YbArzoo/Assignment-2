@@ -163,19 +163,19 @@ def circle_hit():
 
 #Game functions
 def game_overs():
-    global circle_list, special_circle_list, shooter_x, shooter_y, shooter_r, gameover, lives, fire_list, miss
+    global circle_list, special_circle_list, shooter_x, shooter_y, shooter_r, gameover, lives
 
-    for circles in circle_list:
+    for circles in circle_list[:]:
         # CASE 1: Collusion check korbo
         if (circles.y - circles.r) <= (shooter_y + shooter_r):
-            if (((circles.x - circles.r) <= (shooter_x + shooter_r)) and (
-                    (circles.x + circles.r) >= (shooter_x - shooter_r))):
+            if (((circles.x - circles.r) <= (shooter_x + shooter_r)) and ((circles.x + circles.r) >= (shooter_x - shooter_r))):
                 gameover = True
                 print('Game Over! Final Score:', score)
+                return
                 
             if (circles.y + circles.r) <= 0:
                 circle_list.remove(circles)
-                miss += 1
+                lives -= 1
                 print(f"Missed a circle! Lives left: {lives}")
                 
     # CASE 1: Eikhane Collusion check korbo for special circles             
@@ -188,7 +188,7 @@ def game_overs():
             
         if (special.y + special.r) <= 0:
             special_circle_list.remove(special)
-            miss += 1
+            lives -= 1
             print(f"Missed a special circle! Lives Left: {lives}")
 
     # CASE 2: game over hoye jabe jodi total miss 3 hoy
@@ -197,19 +197,7 @@ def game_overs():
         print('Game Over! Final Score:', score)
         print('You have no lives left!')
 
-    # # CASE 3
-    # for fires in fire_list:
-    #     if (fires.y + fires.r) >= 450:
-    #         fire_list.remove(fires)
-    #         miss += 1
-    #         print('Misses:', miss)
 
-    # if miss == 3:
-    #     gameover = True
-    #     print('Game Over! Final Score:', score)
-    #     print('Misses:', miss)
-
-    # glutPostRedisplay()
 
 
 
@@ -427,9 +415,11 @@ def animate():
         if keys[b'd'] and shooter_x < 434:
             shooter_x += 0.85
             
-        for fires in fire_list:
-            if (fires.y - fires.r) <= 450:
-                fires.y += fires.speed
+        for fires in fire_list[:]:
+            fires.y += fires.speed
+            if fires.y > 450:
+                fire_list.remove(fires)
+            
                 
         for circles in circle_list:
             circles.y -= circles.speed
